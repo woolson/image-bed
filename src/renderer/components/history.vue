@@ -84,8 +84,8 @@ export default {
       this.history = history
     },
     copySuccessFn () {
-      this.$message({
-        message: '复制成功',
+      this.$notify({
+        title: '复制成功',
         type: 'success'
       })
     }

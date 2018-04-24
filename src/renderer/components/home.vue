@@ -29,11 +29,20 @@ div.home
     li(v-for="item in result")
       div.avatar(:style="{backgroundImage: 'url(' + item.imageUrl + ')'}")
       div.u-display-flex.u-direction-column.u-flex-1
-        a(:href="item.imageUrl" target="_blank") {{item.imageUrl}}
-        span.u-mtauto.u-green.u-pointer(
-          v-clipboard="item.imageUrl"
-          @success="copySuccessFn"
-        ) 点击复制
+        div
+          i.iconfont.icon-link.u-mr10.u-s24
+          span.u-underline(v-clipboard="item.imageUrl") {{item.imageUrl}}
+        div.u-mt10
+          i.iconfont.icon-image.u-mr10.u-s24
+          span {{item.name || '—'}}
+        div.u-display-flex.u-mtauto.u-align-center
+          span.u-flex-1
+            i.iconfont.icon-calendar.u-mr10.u-s24
+            span {{item.date}}
+          span.u-mtauto.u-green.u-pointer(
+            v-clipboard="item.imageUrl"
+            @success="copySuccessFn"
+          ) 点击复制
   el-button.u-mtauto(
     plain
     @click="onUpload"
@@ -109,6 +118,12 @@ export default {
       this.result = []
     },
     async onUpload () {
+      const loading = this.$loading({
+        lock: true,
+        text: 'Loading',
+        spinner: 'el-icon-loading',
+        background: 'rgba(255, 255, 255, 0.7)'
+      })
       const requests = this.fileList.map(item => {
         return this.uploadFile(item)
       })
@@ -116,6 +131,11 @@ export default {
 
       ipcRenderer.sendSync('insert-history', result)
       this.result = result
+      loading.close()
+      this.$notify({
+        title: '上传完成',
+        type: 'success'
+      })
     },
     uploadFile (file) {
       const formData = new FormData()
@@ -150,8 +170,7 @@ export default {
     },
     copySuccessFn () {
       this.$notify({
-        title: '成功',
-        message: '复制成功',
+        title: '复制成功',
         type: 'success'
       })
     }
@@ -160,17 +179,16 @@ export default {
   watch: {
     async showLogin (newValue) {
       if (!newValue) {
-        const hasLogin = await this.checkLogin()
-        if (hasLogin) {
-          this.disabled = false
+        this.disabled = await this.checkLogin()
+        if (this.disabled) {
           this.$notify({
-            title: '成功',
+            title: '登录成功',
             message: '可以开始使用了',
             type: 'success'
           })
         } else {
           this.$notify.error({
-            title: '错误',
+            title: '登录错误',
             message: '未登录成功哦'
           })
         }
@@ -237,12 +255,16 @@ export default {
     padding .1rem .2rem !important
 
 .home__result
+  flex 1
+  overflow auto
   margin 0
   padding 0
+  color $background
   li
     display flex
-    border-bottom 1px solid $gray
-    padding .15rem 0
+    padding .2rem 0
+    &:nth-child(2n)
+      background $border
     .avatar
       flex-shrink 0
       margin-right .35rem
