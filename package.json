@@ -1,8 +1,8 @@
 {
-  "name": "proxier",
+  "name": "image-bed",
   "version": "0.0.1",
   "author": "woolson <woolson.lee@gmail.com>",
-  "description": "An app for easier proxy request",
+  "description": "An app for easier cut/compress/upload images",
   "license": null,
   "main": "./dist/electron/main.js",
   "scripts": {
@@ -19,7 +19,7 @@
     "postinstall": "npm run lint:fix"
   },
   "build": {
-    "productName": "mac-share",
+    "productName": "image-bed",
     "appId": "org.simulatedgreg.electron-vue",
     "directories": {
       "output": "build"
