@@ -65,7 +65,7 @@
         switch (true) {
           // 必须向右滑动
           case newPath === '/':
-          case newPath === '/setting' && oldPath === '/about':
+          case newPath === '/history' && oldPath === '/about':
             this.routeDir = 'right'
             break
           // 必须向左滑动

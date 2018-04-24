@@ -56,6 +56,7 @@ div.home
 
 <script>
 import axios from 'axios'
+import { ipcRenderer } from 'electron'
 // import { shell } from 'electron'
 import { fileToBase64, pidToUrl } from '../common/utils'
 
@@ -113,6 +114,7 @@ export default {
       })
       const result = await Promise.all(requests)
 
+      ipcRenderer.sendSync('insert-history', result)
       this.result = result
     },
     uploadFile (file) {

@@ -78,6 +78,7 @@ let rendererConfig = {
                   options: {
                     import: [
                       path.join(__dirname, "../src/renderer/style/variable.styl"),
+                      path.join(__dirname, "../src/renderer/style/style.styl"),
                       path.join(__dirname, "../src/renderer/style/animation.styl"),
                       path.join(__dirname, "../src/renderer/style/utils.styl")
                     ]

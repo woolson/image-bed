@@ -1,8 +1,10 @@
 // import os from 'os'
 // import { execSync } from 'child_process'
-import Proxy from './proxy'
+import path from 'path'
+import fs from 'fs'
+import moment from 'moment'
 
-let proxyServer // lint-disable-line
+const HISTORY_FILE = path.join(__dirname, '../db/history.json')
 
 export default function (app, ipc, mainWindow) {
   // 退出软件
@@ -18,18 +20,26 @@ export default function (app, ipc, mainWindow) {
     event.returnValue = 'ok'
   })
 
-  ipc.on('start-proxy', (event, arg) => {
-    proxyServer = new Proxy(arg)
-    event.returnValue = true
+  // 获取历史数据
+  ipc.on('get-history', (event, arg) => {
+    event.returnValue = JSON.parse(fs.readFileSync(HISTORY_FILE))
   })
 
-  ipc.on('update-proxy', (event, arg) => {
-    proxyServer.options = arg
-    event.returnValue = true
-  })
+  // 保存历史
+  ipc.on('insert-history', (event, arg) => {
+    const history = JSON.parse(fs.readFileSync(HISTORY_FILE))
 
-  ipc.on('stop-proxy', (event, arg) => {
-    proxyServer && proxyServer.dropAll()
+    arg.forEach(item => {
+      item = {
+        imageUrl: item.imageUrl,
+        success: item.success,
+        name: item.name,
+        date: moment().format('YYYY-MM-DD HH:mm:SS')
+      }
+      history.push(item)
+    })
+
+    fs.writeFileSync(HISTORY_FILE, JSON.stringify(history, null, 4))
     event.returnValue = true
   })
 }
