@@ -16,18 +16,16 @@ div.home
     li(
       v-for="file,index in fileList"
       :class="{active: index === operateIndex}"
+      :style="{backgroundImage: 'url(' + file.base64 + ')'}"
     )
-      div.avatar(:style="{backgroundImage: 'url(' + file.base64 + ')'}")
-      div.u-display-flex.u-direction-column.u-flex-1
-        div.u-s28.u-display-flex
-          span.name {{file.name}}
-        div.u-mtauto
-          el-button(@click="operateIndex = index") 压缩
-          el-button(@click="cut(index)") 剪裁
-          el-button(
-            type="danger"
-            @click="onDelete(index)"
-          ) 删除
+      span.name {{file.name}}
+      div.button.u-bt
+        span(@click="operateIndex = index") 压缩
+        span(@click="cut(index)") 剪裁
+        span(
+          type="danger"
+          @click="onDelete(index)"
+        ) 删除
   ul.home__result(v-else)
     li(v-for="item in result")
       div.avatar(:style="{backgroundImage: 'url(' + item.imageUrl + ')'}")
@@ -46,12 +44,12 @@ div.home
             v-clipboard="item.imageUrl"
             @success="copySuccessFn"
           ) 点击复制
-  el-button.u-mtauto(
+  el-button.home__button.u-bt(
     plain
     @click="onUpload"
     v-if="!result.length"
   ) 确认上传
-  el-button.u-mtauto(
+  el-button.home__button(
     plain
     type="info"
     @click="onClear"
@@ -195,11 +193,12 @@ export default {
   display flex
   flex-direction column
   align-items stretch
-  padding .2rem .3rem
+  // padding .2rem .3rem
   // position sticky
   overflow hidden
 
 .home__upload
+  padding .2rem .3rem
   > div
     display flex
     .el-upload-dragger
@@ -210,45 +209,58 @@ export default {
       margin-top 0
 
 .home__list
-  // display flex
+  flex 1
+  overflow auto
   list-style none
-  padding 0
+  padding 0 .3rem
   margin 0
-  margin-top .2rem
-  // display flex
-  // flex-wrap wrap
   li
-    width 49%
+    width 48%
     display inline-flex
-    border 1px solid $border
-    padding .1rem
+    flex-direction column
+    box-shadow 0 0 .25rem rgba(black, .1)
     border-radius .05rem
     box-sizing border-box
-    margin-right 2%
-    margin-bottom .2rem
+    margin-right 4%
+    margin-bottom .4rem
+    overflow hidden
+    height 3rem
+    background-size cover
+    background-position center
     &:nth-child(2n)
       margin-right 0
     &.active
-      box-shadow 0 0 .2rem rgba(black, .15)
+      // box-shadow 0 0 .2rem rgba(black, .15)
       border-color $gray
-  .avatar
-    flex-shrink 0
-    margin-right .15rem
-    height 1.3rem
-    width 1.3rem
-    border-radius .05rem
-    background-size cover
-    background-position center
-    box-shadow inset 0 0 .01rem rgba(black, .2)
-    // border 1px solid lighten($border, .8)
-  .nam
-    flex 1
-    width 1px
+    > div, > span
+      background rgba(white, .85)
+  .name
+    display flex
     overflow hidden
     text-overflow ellipsis
     white-space nowrap
-  button
-    padding .1rem .2rem !important
+    margin-top auto
+    padding .15rem
+    color $background
+  .button
+    display flex
+    span
+      background white
+      text-align center
+      flex 1
+      margin 0
+      border none
+      border-radius 0
+      cursor pointer
+      padding .1rem .2rem !important
+      &:hover
+        background lighten($border, 60%)
+        &:nth-child(1)
+          color $green
+        &:nth-child(2)
+          color $yellow
+        &:nth-child(3)
+          color $red
 
 .home__result
   flex 1
@@ -271,36 +283,36 @@ export default {
       background-position center
 
 .home__login
+  left 50%
+  margin-left -3rem
+  position fixed
+  transition all .3s ease-in-out
+  z-index 9
+  webview
+    height 10rem
+    width 6rem
+    box-shadow 0 0 .5rem rgba(black, .15)
+    border-radius 0 0 .05rem .05rem
+    overflow hidden
+    border 1px solid #CCCCCC
+    border-top none
+  > div
+    cursor pointer
+    position absolute
+    width 3rem
+    padding .1rem .2rem
+    box-sizing border-box
+    right -1rem
+    top 10.01rem
+    text-align center
     left 50%
-    margin-left -3rem
-    position fixed
-    transition all .3s ease-in-out
-    z-index 9
-    webview
-        height 10rem
-        width 6rem
-        box-shadow 0 0 .5rem rgba(black, .15)
-        border-radius 0 0 .05rem .05rem
-        overflow hidden
-        border 1px solid #CCCCCC
-        border-top none
-    > div
-        cursor pointer
-        position absolute
-        width 3rem
-        padding .1rem .2rem
-        box-sizing border-box
-        right -1rem
-        top 10.01rem
-        text-align center
-        left 50%
-        margin-left -1.5rem
-        color #969696
-        font-size .26rem
-        background #F8F8F8
-        border-radius 0 0 .05rem .05rem
-        border 1px solid #CCCCCC
-        border-top none
+    margin-left -1.5rem
+    color #969696
+    font-size .26rem
+    background #F8F8F8
+    border-radius 0 0 .05rem .05rem
+    border 1px solid #CCCCCC
+    border-top none
 
 .home__layout
   position absolute
@@ -313,4 +325,9 @@ export default {
   text-align center
   button
     margin-top 5rem
+
+.home__button
+  border none
+  margin-top .02rem
+
 </style>

@@ -31,7 +31,7 @@
 
     data: () => ({
       tabs: [
-        {name: '首页', path: '/'},
+        {name: '上传', path: '/'},
         {name: '历史', path: '/history'},
         {name: '设置', path: '/setting'},
         {name: '关于', path: '/about'}
