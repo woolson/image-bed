@@ -47,13 +47,13 @@ div.home
   el-button.home__button.u-bt(
     plain
     @click="onUpload"
-    v-if="!result.length"
+    v-if="!result.length && fileList.length"
   ) 确认上传
   el-button.home__button(
     plain
     type="info"
     @click="onClear"
-    v-else
+    v-if="result.length && fileList.length"
   ) 清空列表(可去历史记录查看)
   div.home__login(:style="{top: showLogin ? '0rem' : '-11rem'}")
     webview(src="https://passport.weibo.cn/signin/login?entry=mweibo&r=http%3A%2F%2Fm.weibo.cn" target="_self")
