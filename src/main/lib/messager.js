@@ -5,6 +5,7 @@ import fs from 'fs'
 import moment from 'moment'
 
 const HISTORY_FILE = path.join(__dirname, '../db/history.json')
+const DATE_TEMP = 'YYYY-MM-DD HH:mm:SS'
 
 export default function (app, ipc, mainWindow) {
   // 退出软件
@@ -34,7 +35,7 @@ export default function (app, ipc, mainWindow) {
         imageUrl: item.imageUrl,
         success: item.success,
         name: item.name,
-        date: moment().format('YYYY-MM-DD HH:mm:SS')
+        date: moment().format(DATE_TEMP)
       }
       history.push(item)
     })

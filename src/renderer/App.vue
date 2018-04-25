@@ -33,6 +33,7 @@
       tabs: [
         {name: '首页', path: '/'},
         {name: '历史', path: '/history'},
+        {name: '设置', path: '/setting'},
         {name: '关于', path: '/about'}
       ],
       tabIndex: 0,
@@ -66,6 +67,8 @@
           // 必须向右滑动
           case newPath === '/':
           case newPath === '/history' && oldPath === '/about':
+          case newPath === '/history' && oldPath === '/setting':
+          case newPath === '/setting' && oldPath === '/about':
             this.routeDir = 'right'
             break
           // 必须向左滑动

@@ -18,7 +18,9 @@ div.history
     )
     i.iconfont.icon-question.u-ml20
   ul.history__list
-      li(v-for="item in historyList")
+    li.history__list__item(v-for="history in historyList")
+      div.header.u-s34.u-bb {{history.date | date('YYYY年M月D日')}}
+      div.content(v-for="item in history.list")
         div.avatar(:style="{backgroundImage: 'url(' + item.imageUrl + ')'}")
         div.u-display-flex.u-direction-column.u-flex-1
           div
@@ -59,22 +61,41 @@ export default {
   computed: {
     historyList () {
       let history = [...this.history]
-      const temp = 'YYYY-MM-DD HH:mm:SS'
+      const result = {}
+      const tempOne = 'YYYY-MM-DD HH:mm:SS'
+      const tempTwo = 'YYYY-MM-DD'
       history.sort((a, b) => {
         if (this.sort) {
-          return moment(a.date, temp).isBefore(moment(b.date, temp))
+          return moment(a.date, tempOne).isBefore(moment(b.date, tempOne))
         } else {
-          return moment(a.date, temp).isAfter(moment(b.date, temp))
+          return moment(a.date, tempOne).isAfter(moment(b.date, tempOne))
         }
       })
 
       if (this.search) {
         history = history.filter(item => {
-          return item.name.indexOf(this.search) !== -1
+          return (item.name || '').indexOf(this.search) !== -1
         })
       }
 
-      return history
+      history.forEach(item => {
+        const date = moment(item.date, tempOne).format(tempTwo)
+        if (result[date]) result[date].push(item)
+        else result[date] = [item]
+      })
+
+      const sortDate = Object.keys(result).sort((a, b) => {
+        if (this.sort) {
+          return moment(a, tempTwo).isBefore(moment(b, tempTwo))
+        } else {
+          return moment(a, tempTwo).isAfter(moment(b, tempTwo))
+        }
+      })
+
+      return sortDate.map(item => ({
+        date: item,
+        list: result[item]
+      }))
     }
   },
 
@@ -99,7 +120,7 @@ export default {
   flex-direction column
 
 .history__header
-  padding .2rem
+  padding .25rem
   display flex
   align-items center
   i
@@ -111,13 +132,24 @@ export default {
   flex 1
   overflow auto
   margin 0
-  padding 0
+  padding .25rem
   color $background
-  li
+  list-style none
+
+.history__list__item
+  border-radius .05rem
+  // border 1px solid #EFEFEF
+  margin-bottom .3rem
+  box-shadow 0 0 .3rem rgba(black, .2)
+  .header
+    padding .2rem 0
+    text-align center
+    font-weight bold
+  .content
     display flex
     padding .2rem .3rem
-    &:nth-child(2n)
-      background $border
+    &:nth-child(2n + 1)
+      background lighten($border, 60%)
     .avatar
       flex-shrink 0
       margin-right .35rem

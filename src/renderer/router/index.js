@@ -21,6 +21,11 @@ export default new Router({
       component: require('@/components/history').default
     },
     {
+      path: '/setting',
+      name: 'setting',
+      component: require('@/components/setting').default
+    },
+    {
       path: '/about',
       name: 'about',
       component: require('@/components/about').default

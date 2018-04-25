@@ -13,14 +13,17 @@ div.home
     div.el-upload__text 将文件拖到此处，或
       em 点击上传
   ul.home__list(v-if="!result.length")
-    li(v-for="file,index in fileList")
-      div.avatar(:style="{backgroundImage: 'url(' + file.url + ')'}")
+    li(
+      v-for="file,index in fileList"
+      :class="{active: index === operateIndex}"
+    )
+      div.avatar(:style="{backgroundImage: 'url(' + file.base64 + ')'}")
       div.u-display-flex.u-direction-column.u-flex-1
         div.u-s28.u-display-flex
           span.name {{file.name}}
         div.u-mtauto
-          el-button 压缩
-          el-button 剪裁
+          el-button(@click="operateIndex = index") 压缩
+          el-button(@click="cut(index)") 剪裁
           el-button(
             type="danger"
             @click="onDelete(index)"
@@ -61,19 +64,30 @@ div.home
       i.iconfont.icon-close.u-s24.u-ml10
   div.home__layout(v-show="disabled")
     el-button(@click="showLogin = true") 登录
+  transition(name="el-zoom-in-top")
+    compress(
+      v-if="operateIndex >= 0"
+      :resource="fileList[operateIndex].rawBase64 || fileList[operateIndex].base64"
+      :defaultQuality="fileList[operateIndex].quality"
+      @cancel="operateIndex = -1"
+      @submit="onCompress"
+    )
 </template>
 
 <script>
-import axios from 'axios'
 import { ipcRenderer } from 'electron'
+import Compress from './compress'
 // import { shell } from 'electron'
-import { fileToBase64, pidToUrl } from '../common/utils'
+import { fileToBase64, uploadFile, deepCopy } from '../common/utils'
 
-const UPLOAD_URL = 'http://picupload.service.weibo.com/interface/pic_upload.php?mime=image%2Fjpeg&data=base64&url=0&markpos=1&logo=&nick=0&marks=1&app=miniblog'
-const TEST_BASE64 = '/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAAAAAAD/4QNQaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjYtYzE0MCA3OS4xNjA0NTEsIDIwMTcvMDUvMDYtMDE6MDg6MjEgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjYzNDdGREZBM0ZGNTExRTg4Qzk2OEE2RjU2MDM1ODhFIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjYzNDdGREY5M0ZGNTExRTg4Qzk2OEE2RjU2MDM1ODhFIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDQyAoTWFjaW50b3NoKSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6MGMxZmQxMDAtNzk2Yy0yNjRkLTk5NWUtNjdjOTlmNjZlOGJjIiBzdFJlZjpkb2N1bWVudElEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6MGMxZmQxMDAtNzk2Yy0yNjRkLTk5NWUtNjdjOTlmNjZlOGJjIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+/+4ADkFkb2JlAGTAAAAAAf/bAIQAGxoaKR0pQSYmQUIvLy9CRz8+Pj9HR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHRwEdKSk0JjQ/KCg/Rz81P0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dH/8AAEQgAAQABAwEiAAIRAQMRAf/EAEsAAQEAAAAAAAAAAAAAAAAAAAAGAQEAAAAAAAAAAAAAAAAAAAAAEAEAAAAAAAAAAAAAAAAAAAAAEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCmAB//2Q=='
+const TEST_BASE64 = 'data:image/jpeg;base64,/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAAAAAAD/4QNQaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjYtYzE0MCA3OS4xNjA0NTEsIDIwMTcvMDUvMDYtMDE6MDg6MjEgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjYzNDdGREZBM0ZGNTExRTg4Qzk2OEE2RjU2MDM1ODhFIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjYzNDdGREY5M0ZGNTExRTg4Qzk2OEE2RjU2MDM1ODhFIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDQyAoTWFjaW50b3NoKSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6MGMxZmQxMDAtNzk2Yy0yNjRkLTk5NWUtNjdjOTlmNjZlOGJjIiBzdFJlZjpkb2N1bWVudElEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6MGMxZmQxMDAtNzk2Yy0yNjRkLTk5NWUtNjdjOTlmNjZlOGJjIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+/+4ADkFkb2JlAGTAAAAAAf/bAIQAGxoaKR0pQSYmQUIvLy9CRz8+Pj9HR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHRwEdKSk0JjQ/KCg/Rz81P0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dH/8AAEQgAAQABAwEiAAIRAQMRAf/EAEsAAQEAAAAAAAAAAAAAAAAAAAAGAQEAAAAAAAAAAAAAAAAAAAAAEAEAAAAAAAAAAAAAAAAAAAAAEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCmAB//2Q=='
 
 export default {
   name: 'home',
+
+  components: {
+    'compress': Compress
+  },
 
   data: () => ({
     fileList: [],
@@ -83,7 +97,8 @@ export default {
       base64: TEST_BASE64
     },
     showLogin: false,
-    disabled: false
+    disabled: false,
+    operateIndex: -1
   }),
 
   async mounted () {
@@ -100,12 +115,11 @@ export default {
 
   methods: {
     async onChange (file) {
-      const base64 = await fileToBase64(file.raw)
-      file.base64 = base64.split(',')[1]
+      file.base64 = await fileToBase64(file.raw)
       this.fileList.push(file)
     },
     async checkLogin () {
-      const testRel = await this.uploadFile(this.testFile)
+      const testRel = await uploadFile(this.testFile)
       if (!testRel.success && testRel.msg === '请登录微博') {
         return false
       } else return true
@@ -125,7 +139,7 @@ export default {
         background: 'rgba(255, 255, 255, 0.7)'
       })
       const requests = this.fileList.map(item => {
-        return this.uploadFile(item)
+        return uploadFile(item)
       })
       const result = await Promise.all(requests)
 
@@ -137,42 +151,19 @@ export default {
         type: 'success'
       })
     },
-    uploadFile (file) {
-      const formData = new FormData()
-      formData.append('b64_data', file.base64)
-
-      const request = [
-        UPLOAD_URL,
-        formData,
-        { withCredentials: true }
-      ]
-
-      return axios.post(...request).then(res => {
-        let text = res.data
-        text = text.replace(/<.*?\/>/, '')
-        text = text.replace(/<(\w+).*?>.*?<\/\1>/, '')
-        const result = JSON.parse(text)
-
-        switch (result.code) {
-          case 'A20001':
-            if (result.data.count === -1) {
-              return { success: false, msg: '请登录微博', ...file }
-            } else {
-              return { success: false, msg: '文件类型错误', ...file }
-            }
-          case 'A00006':
-            const pid = result.data.pics.pic_1.pid
-            return { success: true, imageUrl: pidToUrl(pid), ...file }
-          default:
-            return { success: false, msg: '未知错误', ...file }
-        }
-      })
-    },
     copySuccessFn () {
       this.$notify({
         title: '复制成功',
         type: 'success'
       })
+    },
+    onCompress (data, quality) {
+      const img = deepCopy(this.fileList[this.operateIndex])
+      img.quality = quality
+      img.rawBase64 = img.base64
+      img.base64 = data
+      this.$set(this.fileList, this.operateIndex, img)
+      this.operateIndex = -1
     }
   },
 
@@ -237,6 +228,9 @@ export default {
     margin-bottom .2rem
     &:nth-child(2n)
       margin-right 0
+    &.active
+      box-shadow 0 0 .2rem rgba(black, .15)
+      border-color $gray
   .avatar
     flex-shrink 0
     margin-right .15rem
@@ -245,7 +239,9 @@ export default {
     border-radius .05rem
     background-size cover
     background-position center
-  .name
+    box-shadow inset 0 0 .01rem rgba(black, .2)
+    // border 1px solid lighten($border, .8)
+  .nam
     flex 1
     width 1px
     overflow hidden
