@@ -38,10 +38,7 @@ div.home
         div.u-mt10
           i.iconfont.icon-image.u-mr10.u-s24
           span {{item.name || '—'}}
-        div.u-display-flex.u-mtauto.u-align-center
-          span.u-flex-1
-            i.iconfont.icon-calendar.u-mr10.u-s24
-            span {{item.date}}
+        div.u-mtauto.u-text-right
           span.u-mtauto.u-green.u-pointer(
             v-clipboard="item.imageUrl"
             @success="copySuccessFn"
@@ -299,8 +296,9 @@ export default {
   flex 1
   overflow auto
   margin 0
-  padding 0
+  padding .25rem
   color $background
+  list-style none
   li
     display flex
     padding .2rem 0
