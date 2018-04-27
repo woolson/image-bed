@@ -13,19 +13,21 @@ div.home
     div.el-upload__text 将文件拖到此处，或
       em 点击上传
   ul.home__list(v-if="!result.length")
-    li(
+    li.home__list__item(
       v-for="file,index in fileList"
       :class="{active: index === operateIndex}"
-      :style="{backgroundImage: 'url(' + file.base64 + ')'}"
     )
-      span.name {{file.name}}
-      div.button.u-bt
-        span(@click="operateIndex = index") 压缩
-        span(@click="cut(index)") 剪裁
-        span(
-          type="danger"
-          @click="onDelete(index)"
-        ) 删除
+      div.avatar.u-br(:style="{backgroundImage: 'url(' + file.base64 + ')'}")
+      div.content
+        p.name {{file.name}}
+        span.u-ml20 {{sizeFormat(file.size)}}
+        div.u-bt
+          i.iconfont.icon-compress(@click="operateIndex = index")
+          i.iconfont.icon-cut.u-bold(@click="cut(index)")
+          i.iconfont.icon-delete.u-bold(
+            type="danger"
+            @click="onDelete(index)"
+          )
   ul.home__result(v-else)
     li(v-for="item in result")
       div.avatar(:style="{backgroundImage: 'url(' + item.imageUrl + ')'}")
@@ -162,6 +164,17 @@ export default {
       img.base64 = data
       this.$set(this.fileList, this.operateIndex, img)
       this.operateIndex = -1
+    },
+    sizeFormat (size, digit = 2) {
+      const unit = ['B', 'KB', 'MB', 'GB', 'TB']
+      let unitIndex = 0
+
+      while (size > 1000) {
+        size = size / 1000
+        unitIndex++
+      }
+
+      return `${Number(size).toFixed(digit)}${unit[unitIndex]}`
     }
   },
 
@@ -198,7 +211,7 @@ export default {
   overflow hidden
 
 .home__upload
-  padding .2rem .3rem
+  padding .2rem .3rem 0 .3rem
   > div
     display flex
     .el-upload-dragger
@@ -212,55 +225,75 @@ export default {
   flex 1
   overflow auto
   list-style none
-  padding 0 .3rem
+  padding .2rem .3rem
   margin 0
   li
-    width 48%
+    width 49%
     display inline-flex
-    flex-direction column
-    box-shadow 0 0 .25rem rgba(black, .1)
-    border-radius .05rem
+    box-shadow 0 0 .02rem rgba(black, .2)
+    border-radius .12rem
     box-sizing border-box
-    margin-right 4%
-    margin-bottom .4rem
+    margin-right 2%
+    margin-bottom .2rem
     overflow hidden
-    height 3rem
+    height 2rem
     background-size cover
     background-position center
+    transition all .3s
     &:nth-child(2n)
       margin-right 0
     &.active
-      // box-shadow 0 0 .2rem rgba(black, .15)
       border-color $gray
-    > div, > span
-      background rgba(white, .85)
-  .name
+    &:hover
+      box-shadow 0 0 .2rem rgba(black, .15)
+
+.home__list__item
+  .avatar
+    height 2rem
+    width 2rem
+    flex-shrink 0
+    background-size cover
+    background-position center
+    border-radius .05rem 0 0 .05rem
+  .content
+    flex 1
     display flex
-    overflow hidden
-    text-overflow ellipsis
-    white-space nowrap
-    margin-top auto
-    padding .15rem
-    color $background
-  .button
-    display flex
-    span
-      background white
-      text-align center
-      flex 1
+    flex-direction column
+    overflow auto
+    p
+      width 100%
+      box-sizing border-box
       margin 0
-      border none
-      border-radius 0
-      cursor pointer
-      padding .1rem .2rem !important
-      &:hover
-        background lighten($border, 60%)
-        &:nth-child(1)
-          color $green
-        &:nth-child(2)
-          color $yellow
-        &:nth-child(3)
-          color $red
+      padding .1rem .2rem
+      text-overflow ellipsis
+      overflow hidden
+      white-space nowrap
+      font-size .28rem
+      line-height .4rem
+      color $background
+      opacity .7
+    span
+      color $background
+      opacity .7
+    div
+      display flex
+      justify-content space-around
+      margin-top auto
+      padding .1rem
+      > i
+        color rgba($background, .6)
+        cursor pointer
+        padding 0 .1rem
+        &:hover
+          &:nth-child(1)
+            color $green
+            text-shadow 0 0 .02rem rgba($green, .5)
+          &:nth-child(2)
+            color $yellow
+            text-shadow 0 0 .02rem rgba($yellow, .5)
+          &:nth-child(3)
+            color $red
+            text-shadow 0 0 .02rem rgba($red, .5)
 
 .home__result
   flex 1
@@ -329,5 +362,6 @@ export default {
 .home__button
   border none
   margin-top .02rem
+  padding .3rem
 
 </style>

@@ -49,6 +49,10 @@ export default {
     }
   },
 
+  mounted () {
+    this.compress()
+  },
+
   methods: {
     async compress () {
       const result = await imgCompress(this.before, this.quality / 100)
