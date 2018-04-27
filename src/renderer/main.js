@@ -2,6 +2,7 @@ import Vue from 'vue'
 // import axios from 'axios'
 import ElementUI from 'element-ui'
 import VueClipboards from 'vue-clipboards'
+import VueCroppa from 'vue-croppa'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'element-ui/lib/theme-chalk/base.css'
 
@@ -16,6 +17,7 @@ Vue.config.productionTip = false
 
 Vue.use(ElementUI, { size: 'small' })
 Vue.use(VueClipboards)
+Vue.use(VueCroppa)
 
 /* eslint-disable no-new */
 new Vue({

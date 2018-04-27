@@ -15,15 +15,15 @@ div.home
   ul.home__list(v-if="!result.length")
     li.home__list__item(
       v-for="file,index in fileList"
-      :class="{active: index === operateIndex}"
+      :class="{active: index === compressIndex}"
     )
       div.avatar.u-br(:style="{backgroundImage: 'url(' + file.base64 + ')'}")
       div.content
         p.name {{file.name}}
         span.u-ml20 {{sizeFormat(file.size)}}
         div.u-bt
-          i.iconfont.icon-compress(@click="operateIndex = index")
-          i.iconfont.icon-cut.u-bold(@click="cut(index)")
+          i.iconfont.icon-compress(@click="compressIndex = index")
+          i.iconfont.icon-cut.u-bold(@click="clipIndex = index")
           i.iconfont.icon-delete.u-bold(
             type="danger"
             @click="onDelete(index)"
@@ -63,18 +63,25 @@ div.home
     el-button(@click="showLogin = true") 登录
   transition(name="el-zoom-in-top")
     compress(
-      v-if="operateIndex >= 0"
-      :resource="fileList[operateIndex].rawBase64 || fileList[operateIndex].base64"
-      :defaultQuality="fileList[operateIndex].quality"
-      @cancel="operateIndex = -1"
+      v-if="compressIndex >= 0"
+      :resource="fileList[compressIndex].rawBase64 || fileList[compressIndex].base64"
+      :defaultQuality="fileList[compressIndex].quality"
+      @cancel="compressIndex = -1"
       @submit="onCompress"
+    )
+  transition(name="el-zoom-in-top")
+    clipboard(
+      v-if="clipIndex >= 0"
+      :resource="fileList[clipIndex].base64"
+      @cancel="clipIndex = -1"
+      @submit="onClipboard"
     )
 </template>
 
 <script>
 import { ipcRenderer } from 'electron'
 import Compress from './compress'
-// import { shell } from 'electron'
+import Clipboard from './clipboard'
 import { fileToBase64, uploadFile, deepCopy } from '../common/utils'
 
 const TEST_BASE64 = 'data:image/jpeg;base64,/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAAAAAAD/4QNQaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjYtYzE0MCA3OS4xNjA0NTEsIDIwMTcvMDUvMDYtMDE6MDg6MjEgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjYzNDdGREZBM0ZGNTExRTg4Qzk2OEE2RjU2MDM1ODhFIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjYzNDdGREY5M0ZGNTExRTg4Qzk2OEE2RjU2MDM1ODhFIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDQyAoTWFjaW50b3NoKSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6MGMxZmQxMDAtNzk2Yy0yNjRkLTk5NWUtNjdjOTlmNjZlOGJjIiBzdFJlZjpkb2N1bWVudElEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6MGMxZmQxMDAtNzk2Yy0yNjRkLTk5NWUtNjdjOTlmNjZlOGJjIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+/+4ADkFkb2JlAGTAAAAAAf/bAIQAGxoaKR0pQSYmQUIvLy9CRz8+Pj9HR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHRwEdKSk0JjQ/KCg/Rz81P0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dH/8AAEQgAAQABAwEiAAIRAQMRAf/EAEsAAQEAAAAAAAAAAAAAAAAAAAAGAQEAAAAAAAAAAAAAAAAAAAAAEAEAAAAAAAAAAAAAAAAAAAAAEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCmAB//2Q=='
@@ -83,7 +90,8 @@ export default {
   name: 'home',
 
   components: {
-    'compress': Compress
+    'compress': Compress,
+    'clipboard': Clipboard
   },
 
   data: () => ({
@@ -95,7 +103,8 @@ export default {
     },
     showLogin: false,
     disabled: false,
-    operateIndex: -1
+    compressIndex: -1,
+    clipIndex: -1
   }),
 
   async mounted () {
@@ -155,12 +164,19 @@ export default {
       })
     },
     onCompress (data, quality) {
-      const img = deepCopy(this.fileList[this.operateIndex])
+      const img = deepCopy(this.fileList[this.compressIndex])
       img.quality = quality
       img.rawBase64 = img.base64
       img.base64 = data
-      this.$set(this.fileList, this.operateIndex, img)
-      this.operateIndex = -1
+      this.$set(this.fileList, this.compressIndex, img)
+      this.compressIndex = -1
+    },
+    onClipboard (data) {
+      const img = deepCopy(this.fileList[this.clipIndex])
+      img.rawBase64 = img.base64
+      img.base64 = data
+      this.$set(this.fileList, this.clipIndex, img)
+      this.clipIndex = -1
     },
     sizeFormat (size, digit = 2) {
       const unit = ['B', 'KB', 'MB', 'GB', 'TB']
