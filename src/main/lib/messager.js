@@ -43,4 +43,11 @@ export default function (app, ipc, mainWindow) {
     fs.writeFileSync(HISTORY_FILE, JSON.stringify(history, null, 4))
     event.returnValue = true
   })
+
+  // 保存历史
+  ipc.on('clear-history', (event, arg) => {
+    console.log('=========')
+    fs.writeFileSync(HISTORY_FILE, '[]')
+    event.returnValue = true
+  })
 }

@@ -17,7 +17,8 @@ div.history
       content="这是一段内容,这是一段内容,这是一段内容,这是一段内容。"
     )
     i.iconfont.icon-question.u-ml20
-  ul.history__list
+  span.history__empty(v-if="!history.length") 暂无历史记录
+  ul.history__list(v-else)
     li.history__list__item(v-for="history in historyList")
       div.header.u-s34.u-bb {{history.date | date('YYYY年M月D日')}}
       div.content(v-for="item in history.list")
@@ -127,6 +128,12 @@ export default {
     font-size .4rem
     color $gray
     cursor help
+
+.history__empty
+  margin-top 1rem
+  color $background
+  font-size .4rem
+  text-align center
 
 .history__list
   flex 1

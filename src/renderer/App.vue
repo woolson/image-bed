@@ -33,8 +33,8 @@
       tabs: [
         {name: '上传', path: '/'},
         {name: '历史', path: '/history'},
-        {name: '设置', path: '/setting'},
-        {name: '关于', path: '/about'}
+        {name: '设置', path: '/setting'}
+        // {name: '关于', path: '/about'}
       ],
       tabIndex: 0,
       showLogin: false
