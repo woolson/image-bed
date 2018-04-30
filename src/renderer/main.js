@@ -1,6 +1,7 @@
 import Vue from 'vue'
 // import axios from 'axios'
 import ElementUI from 'element-ui'
+import Mousetrap from 'mousetrap'
 import VueClipboards from 'vue-clipboards'
 import VueCroppa from 'vue-croppa'
 import './assets/font/iconfont.css'
@@ -23,9 +24,13 @@ Vue.use(VueClipboards)
 Vue.use(VueCroppa)
 Vue.use(Fetch)
 
+Mousetrap.bind('command+,', () => {
+  window.vm.$router.push('/setting')
+})
+
 Vue.prototype.$db = DB
 /* eslint-disable no-new */
-new Vue({
+window.vm = new Vue({
   components: { App },
   router,
   // store,

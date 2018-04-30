@@ -1,6 +1,6 @@
 {
   "name": "image-bed",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "author": "woolson <woolson.lee@gmail.com>",
   "description": "An app for easier cut/compress/upload images",
   "license": null,
@@ -20,7 +20,7 @@
     "asar": "asar list ./build/mac/image-bed.app/Contents/Resources/app.asar"
   },
   "build": {
-    "productName": "image-bed",
+    "productName": "图吧",
     "appId": "org.simulatedgreg.electron-vue",
     "directories": {
       "output": "build"
@@ -97,6 +97,7 @@
     "html-webpack-plugin": "^2.30.1",
     "http-proxy": "^1.16.2",
     "moment": "^2.22.1",
+    "mousetrap": "^1.6.1",
     "multispinner": "^0.2.1",
     "nedb": "^1.8.0",
     "network": "^0.4.1",
