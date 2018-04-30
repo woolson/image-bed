@@ -148,7 +148,7 @@ export default {
   border-radius .05rem
   // border 1px solid #EFEFEF
   margin-bottom .3rem
-  box-shadow 0 0 .05rem rgba(black, .2)
+  box-shadow 0 0 .01rem rgba(black, .3)
   .header
     padding .2rem 0
     text-align center

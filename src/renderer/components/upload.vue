@@ -59,7 +59,7 @@ div.home
     div(@click="showLogin = false")
       span 登录完成后请关闭
       i.iconfont.icon-close.u-s24.u-ml10
-  div.home__layout(v-show="disabled")
+  div.home__layout(v-show="!disabled")
     el-button(@click="showLogin = true") 登录
   transition(name="el-zoom-in-top")
     compress(

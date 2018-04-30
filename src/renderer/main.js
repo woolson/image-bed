@@ -3,6 +3,7 @@ import Vue from 'vue'
 import ElementUI from 'element-ui'
 import VueClipboards from 'vue-clipboards'
 import VueCroppa from 'vue-croppa'
+import './assets/font/iconfont.css'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'element-ui/lib/theme-chalk/base.css'
 
