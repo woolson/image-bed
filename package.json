@@ -16,7 +16,8 @@
     "pack": "npm run pack:main && npm run pack:renderer",
     "pack:main": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.main.config.js",
     "pack:renderer": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.renderer.config.js",
-    "postinstall": "npm run lint:fix"
+    "postinstall": "npm run lint:fix",
+    "asar": "asar list ./build/mac/image-bed.app/Contents/Resources/app.asar"
   },
   "build": {
     "productName": "image-bed",
@@ -60,6 +61,7 @@
     "vuex": "^2.3.1"
   },
   "devDependencies": {
+    "asar": "^0.14.3",
     "axios": "^0.16.2",
     "babel-core": "^6.25.0",
     "babel-eslint": "^7.2.3",
@@ -96,6 +98,7 @@
     "http-proxy": "^1.16.2",
     "moment": "^2.22.1",
     "multispinner": "^0.2.1",
+    "nedb": "^1.8.0",
     "network": "^0.4.1",
     "node-loader": "^0.6.0",
     "node-nmap": "^4.0.0",

@@ -8,8 +8,9 @@ import 'element-ui/lib/theme-chalk/base.css'
 
 import App from './App'
 import router from './router'
-import store from './store'
+// import store from './store'
 import Fetch from './common/fetch'
+import DB from './common/db'
 import './common/filter'
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
@@ -21,10 +22,11 @@ Vue.use(VueClipboards)
 Vue.use(VueCroppa)
 Vue.use(Fetch)
 
+Vue.prototype.$db = DB
 /* eslint-disable no-new */
 new Vue({
   components: { App },
   router,
-  store,
+  // store,
   template: '<App/>'
 }).$mount('#app')

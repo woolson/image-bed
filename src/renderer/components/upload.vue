@@ -79,10 +79,10 @@ div.home
 </template>
 
 <script>
-import { ipcRenderer } from 'electron'
 import Compress from './compress'
 import Clipboard from './clipboard'
 import { fileToBase64, uploadFile, deepCopy } from '../common/utils'
+import moment from 'moment'
 
 const TEST_BASE64 = 'data:image/jpeg;base64,/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAAAAAAD/4QNQaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjYtYzE0MCA3OS4xNjA0NTEsIDIwMTcvMDUvMDYtMDE6MDg6MjEgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjYzNDdGREZBM0ZGNTExRTg4Qzk2OEE2RjU2MDM1ODhFIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjYzNDdGREY5M0ZGNTExRTg4Qzk2OEE2RjU2MDM1ODhFIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDQyAoTWFjaW50b3NoKSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6MGMxZmQxMDAtNzk2Yy0yNjRkLTk5NWUtNjdjOTlmNjZlOGJjIiBzdFJlZjpkb2N1bWVudElEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6MGMxZmQxMDAtNzk2Yy0yNjRkLTk5NWUtNjdjOTlmNjZlOGJjIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+/+4ADkFkb2JlAGTAAAAAAf/bAIQAGxoaKR0pQSYmQUIvLy9CRz8+Pj9HR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHRwEdKSk0JjQ/KCg/Rz81P0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dH/8AAEQgAAQABAwEiAAIRAQMRAf/EAEsAAQEAAAAAAAAAAAAAAAAAAAAGAQEAAAAAAAAAAAAAAAAAAAAAEAEAAAAAAAAAAAAAAAAAAAAAEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCmAB//2Q=='
 
@@ -149,12 +149,21 @@ export default {
       })
       const result = await Promise.all(requests)
 
-      ipcRenderer.sendSync('insert-history', result)
-      this.result = result
-      loading.close()
-      this.$notify({
-        title: '上传完成',
-        type: 'success'
+      result.forEach(item => {
+        item.date = moment().format('YYYY-MM-DD HH:mm:SS')
+      })
+      // ipcRenderer.sendSync('insert-history', result)
+      this.$db.insert(result, (err, newDocs) => {
+        if (err) {
+          this.$notify.error({title: '上传出错'})
+        } else {
+          this.result = result
+          loading.close()
+          this.$notify({
+            title: '上传完成',
+            type: 'success'
+          })
+        }
       })
     },
     copySuccessFn () {
@@ -317,7 +326,8 @@ export default {
   list-style none
   li
     display flex
-    padding .2rem 0
+    padding .2rem
+    border-radius .05rem
     &:nth-child(2n)
       background $border
     .avatar

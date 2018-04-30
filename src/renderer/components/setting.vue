@@ -60,7 +60,6 @@ div.setting
 
 <script>
 import Package from '../../../package.json'
-import { ipcRenderer } from 'electron'
 
 export default {
   data () {
@@ -88,10 +87,15 @@ export default {
     clearHistory () {
       this.$confirm('确认清空历史记录，这将无法撤回？')
         .then(() => {
-          ipcRenderer.sendSync('clear-history')
-          this.$notify({
-            title: '清除成功',
-            type: 'success'
+          this.$db.remove({}, { multi: true }, (err, numRemoved) => {
+            if (err) {
+              this.$notify.error({title: '清除失败'})
+            } else {
+              this.$notify({
+                title: `成功清除${numRemoved}条记录`,
+                type: 'success'
+              })
+            }
           })
         })
     },

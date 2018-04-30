@@ -1,11 +1,7 @@
-// import os from 'os'
-// import { execSync } from 'child_process'
-import path from 'path'
-import fs from 'fs'
-import moment from 'moment'
+// import moment from 'moment'
+// import db from './db'
 
-const HISTORY_FILE = path.join(__dirname, '../db/history.json')
-const DATE_TEMP = 'YYYY-MM-DD HH:mm:SS'
+// const DATE_TEMP = 'YYYY-MM-DD HH:mm:SS'
 
 export default function (app, ipc, mainWindow) {
   // 退出软件
@@ -22,32 +18,33 @@ export default function (app, ipc, mainWindow) {
   })
 
   // 获取历史数据
-  ipc.on('get-history', (event, arg) => {
-    event.returnValue = JSON.parse(fs.readFileSync(HISTORY_FILE))
-  })
+  // ipc.on('get-history', (event, arg) => {
+  //   db.find({}, (err, docs) => {
+  //     if (err) event.returnValue = []
+  //     else event.returnValue = docs
+  //   })
+  //   // event.returnValue = JSON.parse(fs.readFileSync(HISTORY_FILE))
+  // })
 
   // 保存历史
-  ipc.on('insert-history', (event, arg) => {
-    const history = JSON.parse(fs.readFileSync(HISTORY_FILE))
+  // ipc.on('insert-history', (event, arg) => {
+  //   const docs = arg.map(item => {
+  //     return {
+  //       imageUrl: item.imageUrl,
+  //       success: item.success,
+  //       name: item.name,
+  //       date: moment().format(DATE_TEMP)
+  //     }
+  //   })
 
-    arg.forEach(item => {
-      item = {
-        imageUrl: item.imageUrl,
-        success: item.success,
-        name: item.name,
-        date: moment().format(DATE_TEMP)
-      }
-      history.push(item)
-    })
-
-    fs.writeFileSync(HISTORY_FILE, JSON.stringify(history, null, 4))
-    event.returnValue = true
-  })
+  //   db.insert(docs, (err, result) => (event.returnValue = !!err))
+  // })
 
   // 保存历史
-  ipc.on('clear-history', (event, arg) => {
-    console.log('=========')
-    fs.writeFileSync(HISTORY_FILE, '[]')
-    event.returnValue = true
-  })
+  // ipc.on('clear-history', (event, arg) => {
+  //   db.remove({}, { multi: true }, (err, numRemoved) => {
+  //     if (err) event.returnValue = false
+  //     else event.returnValue = numRemoved
+  //   })
+  // })
 }

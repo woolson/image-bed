@@ -42,7 +42,6 @@ div.history
 
 <script>
 import moment from 'moment'
-import { ipcRenderer } from 'electron'
 
 export default {
   data: () => ({
@@ -102,8 +101,10 @@ export default {
 
   methods: {
     getHistory () {
-      const history = ipcRenderer.sendSync('get-history')
-      this.history = history
+      this.$db.find({}, (err, docs) => {
+        if (err) this.history = []
+        else this.history = docs
+      })
     },
     copySuccessFn () {
       this.$notify({

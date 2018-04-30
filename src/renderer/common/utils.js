@@ -46,8 +46,7 @@ export function uploadFile (file) {
     { withCredentials: true }
   ]
 
-  return axios.post(...request).then(res => {
-    let text = res.data
+  return axios.post(...request).then(text => {
     text = text.replace(/<.*?\/>/, '')
     text = text.replace(/<(\w+).*?>.*?<\/\1>/, '')
     const result = JSON.parse(text)
