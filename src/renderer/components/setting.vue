@@ -17,15 +17,16 @@ div.setting
       label 当前版本
       div
         span.u-mr20.u-main v{{version}}
-        span.u-mr20.u-red(
+        span.u-mr20.u-red.u-pointer.u-underline(
           v-if="version !== newestVersion && newestVersion"
-        ) 最新版本：v{{newestVersion}}
+          @click="openDownload"
+        ) 最新【点击下载】: v{{newestVersion}}
         el-button(
           size="mini"
           :loading="checking"
           @click="fetchVersion"
         ) 检查更新
-    div.setting__line
+    div.setting__line(v-if="false")
       label 意见反馈
       div.u-display-flex
         el-button(
@@ -60,6 +61,7 @@ div.setting
 
 <script>
 import Package from '../../../package.json'
+import { shell } from 'electron'
 
 export default {
   data () {
@@ -103,6 +105,9 @@ export default {
       this.checking = true
 
       setTimeout(() => (this.checking = false), 2000)
+    },
+    openDownload () {
+      shell.openExternal(Package.download || '')
     }
   }
 }

@@ -59,7 +59,7 @@ div.home
     div(@click="showLogin = false")
       span 登录完成后请关闭
       i.iconfont.icon-close.u-s24.u-ml10
-  div.home__layout(v-show="!disabled")
+  div.home__layout(v-show="disabled")
     el-button(@click="showLogin = true") 登录
   transition(name="el-zoom-in-top")
     compress(
@@ -116,6 +116,13 @@ export default {
         title: '错误',
         message: '请登录微博先'
       })
+    }
+  },
+
+  async activated () {
+    if (this.disabled) {
+      const hasLogin = await this.checkLogin()
+      this.disabled = !hasLogin
     }
   },
 
@@ -203,8 +210,9 @@ export default {
   watch: {
     async showLogin (newValue) {
       if (!newValue) {
-        this.disabled = await this.checkLogin()
-        if (this.disabled) {
+        const hasLogin = await this.checkLogin()
+        this.disabled = !hasLogin
+        if (hasLogin) {
           this.$notify({
             title: '登录成功',
             message: '可以开始使用了',

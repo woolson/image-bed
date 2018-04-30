@@ -5,6 +5,7 @@
   "description": "An app for easier cut/compress/upload images",
   "license": null,
   "main": "./dist/electron/main.js",
+  "download": "http://woolson.coding.me/image-bed-app",
   "scripts": {
     "build": "node .electron-vue/build.js && electron-builder",
     "build:dir": "node .electron-vue/build.js && electron-builder --dir",

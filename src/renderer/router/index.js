@@ -26,11 +26,6 @@ export default new Router({
       component: require('@/components/setting').default
     },
     {
-      path: '/about',
-      name: 'about',
-      component: require('@/components/about').default
-    },
-    {
       path: '*',
       redirect: '/'
     }
