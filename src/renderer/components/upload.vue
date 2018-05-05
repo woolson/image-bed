@@ -64,7 +64,7 @@ div.home
   transition(name="el-zoom-in-top")
     compress(
       v-if="compressIndex >= 0"
-      :resource="fileList[compressIndex].rawBase64 || fileList[compressIndex].base64"
+      :resource="fileList[compressIndex].base64"
       :defaultQuality="fileList[compressIndex].quality"
       @cancel="compressIndex = -1"
       @submit="onCompress"
@@ -72,7 +72,7 @@ div.home
   transition(name="el-zoom-in-top")
     clipboard(
       v-if="clipIndex >= 0"
-      :resource="fileList[clipIndex].base64"
+      :resource="fileList[clipIndex].rawBase64 || fileList[clipIndex].base64"
       @cancel="clipIndex = -1"
       @submit="onClipboard"
     )
@@ -108,19 +108,18 @@ export default {
   }),
 
   async mounted () {
+    if (process.env.NODE_ENV === 'development') return
+
     const hasLogin = await this.checkLogin()
     if (!hasLogin) {
       this.showLogin = true
       this.disabled = true
-      this.$notify.error({
-        title: '错误',
-        message: '请登录微博先'
-      })
+      this.$notify.error({title: '请登录微博先'})
     }
   },
 
   async activated () {
-    if (this.disabled) {
+    if (this.disabled && process.env.NODE_ENV !== 'development') {
       const hasLogin = await this.checkLogin()
       this.disabled = !hasLogin
     }
@@ -182,14 +181,14 @@ export default {
     onCompress (data, quality) {
       const img = deepCopy(this.fileList[this.compressIndex])
       img.quality = quality
-      img.rawBase64 = img.base64
+      img.rawBase64 = img.rawBase64 || img.base64
       img.base64 = data
       this.$set(this.fileList, this.compressIndex, img)
       this.compressIndex = -1
     },
     onClipboard (data) {
       const img = deepCopy(this.fileList[this.clipIndex])
-      img.rawBase64 = img.base64
+      img.rawBase64 = img.rawBase64 || img.base64
       img.base64 = data
       this.$set(this.fileList, this.clipIndex, img)
       this.clipIndex = -1
@@ -215,14 +214,10 @@ export default {
         if (hasLogin) {
           this.$notify({
             title: '登录成功',
-            message: '可以开始使用了',
             type: 'success'
           })
         } else {
-          this.$notify.error({
-            title: '登录错误',
-            message: '未登录成功哦'
-          })
+          this.$notify.error({title: '未登录成功'})
         }
       }
     }
