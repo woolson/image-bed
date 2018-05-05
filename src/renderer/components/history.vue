@@ -9,14 +9,12 @@ div.history
     )
     el-button.u-mlauto(@click="sort = !sort") {{sort ? '倒序' : '顺序'}}
     el-popover(
-      ref="discription"
-      placement="top-start"
-      title="描述"
+      title="提示"
       width="200"
       trigger="hover"
-      content="这是一段内容,这是一段内容,这是一段内容,这是一段内容。"
+      content="上传历史记录只保存在本地"
     )
-    i.iconfont.icon-question.u-ml20
+      i.iconfont.icon-question.u-ml20(slot="reference")
   span.history__empty(v-if="!history.length") 暂无历史记录
   ul.history__list(v-else)
     li.history__list__item(v-for="history in historyList")

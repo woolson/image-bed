@@ -76,6 +76,16 @@ export default {
     }
   },
 
+  mounted () {
+    this.$get('http://woolson.coding.me/image-bed-app/package.json')
+      .then(res => (this.newestVersion = res.version))
+  },
+
+  activated () {
+    this.$get('http://woolson.coding.me/image-bed-app/package.json')
+      .then(res => (this.newestVersion = res.version))
+  },
+
   methods: {
     fetchVersion () {
       this.$get('http://woolson.coding.me/image-bed-app/package.json')
@@ -87,7 +97,7 @@ export default {
         })
     },
     clearHistory () {
-      this.$confirm('确认清空历史记录，这将无法撤回？')
+      this.$confirm('确认清空历史记录？这将无法撤回！')
         .then(() => {
           this.$db.remove({}, { multi: true }, (err, numRemoved) => {
             if (err) {
@@ -100,11 +110,6 @@ export default {
             }
           })
         })
-    },
-    checkUpdate () {
-      this.checking = true
-
-      setTimeout(() => (this.checking = false), 2000)
     },
     openDownload () {
       shell.openExternal(Package.download || '')

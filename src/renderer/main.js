@@ -3,7 +3,6 @@ import Vue from 'vue'
 import ElementUI from 'element-ui'
 import Mousetrap from 'mousetrap'
 import VueClipboards from 'vue-clipboards'
-// import VueCroppa from 'vue-cropper'
 import './assets/font/iconfont.css'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'element-ui/lib/theme-chalk/base.css'
@@ -21,7 +20,6 @@ Vue.config.productionTip = false
 
 Vue.use(ElementUI, { size: 'small' })
 Vue.use(VueClipboards)
-// Vue.use(VueCroppa)
 Vue.use(Fetch)
 
 Mousetrap.bind('command+,', () => {
