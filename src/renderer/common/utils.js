@@ -67,25 +67,24 @@ export function uploadFile (file) {
   })
 }
 
-export function imgCompress (data, quality, outputFormat = 'image/png') {
+export function imgCompress (data, quality, outputFormat = 'image/jpeg') {
   return new Promise((resolve, reject) => {
     let canvas = document.createElement('CANVAS')
     const ctx = canvas.getContext('2d')
     const img = new Image()
 
     img.crossOrigin = 'Anonymous'
+    img.src = data
     img.onload = function () {
       const { width, height } = img || {}
       // 按比例压缩4倍
-      // const rate = (width < height ? width / height : height / width) / 4
-      canvas.width = width * quality
-      canvas.height = height * quality
-      ctx.drawImage(img, 0, 0, width, height, 0, 0, width * quality, height * quality)
+      canvas.width = width
+      canvas.height = height
+      ctx.drawImage(img, 0, 0, width, height)
       var dataURL = canvas.toDataURL(outputFormat, quality)
       resolve(dataURL)
       canvas = null
     }
-    img.src = data
   })
 }
 

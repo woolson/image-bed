@@ -17,13 +17,13 @@ div.home
       v-for="file,index in fileList"
       :class="{active: index === compressIndex}"
     )
-      div.avatar.u-br(:style="{backgroundImage: 'url(' + file.base64 + ')'}")
+      div.avatar.u-br(:style="{backgroundImage: 'url(' + getBG(file) + ')'}")
       div.content
         p.name {{file.name}}
         span.u-ml20 {{sizeFormat(file.size)}}
         div.u-bt
-          i.iconfont.icon-compress(@click="compressIndex = index")
           i.iconfont.icon-cut.u-bold(@click="clipIndex = index")
+          i.iconfont.icon-compress(@click="compressIndex = index")
           i.iconfont.icon-delete.u-bold(
             type="danger"
             @click="onDelete(index)"
@@ -64,7 +64,7 @@ div.home
   transition(name="el-zoom-in-top")
     compress(
       v-if="compressIndex >= 0"
-      :resource="fileList[compressIndex].base64"
+      :resource="fileList[compressIndex].clipBase64 || fileList[compressIndex].base64"
       :defaultQuality="fileList[compressIndex].quality"
       @cancel="compressIndex = -1"
       @submit="onCompress"
@@ -72,7 +72,7 @@ div.home
   transition(name="el-zoom-in-top")
     clipboard(
       v-if="clipIndex >= 0"
-      :resource="fileList[clipIndex].rawBase64 || fileList[clipIndex].base64"
+      :resource="fileList[clipIndex].base64"
       @cancel="clipIndex = -1"
       @submit="onClipboard"
     )
@@ -151,6 +151,7 @@ export default {
         background: 'rgba(255, 255, 255, 0.7)'
       })
       const requests = this.fileList.map(item => {
+        item.base64 = this.getBG(item)
         return uploadFile(item)
       })
       const result = await Promise.all(requests)
@@ -181,15 +182,14 @@ export default {
     onCompress (data, quality) {
       const img = deepCopy(this.fileList[this.compressIndex])
       img.quality = quality
-      img.rawBase64 = img.rawBase64 || img.base64
-      img.base64 = data
+      img.compressBase64 = data
       this.$set(this.fileList, this.compressIndex, img)
       this.compressIndex = -1
     },
     onClipboard (data) {
       const img = deepCopy(this.fileList[this.clipIndex])
-      img.rawBase64 = img.rawBase64 || img.base64
-      img.base64 = data
+      img.clipBase64 = data
+      img.compressBase64 = undefined
       this.$set(this.fileList, this.clipIndex, img)
       this.clipIndex = -1
     },
@@ -203,6 +203,9 @@ export default {
       }
 
       return `${Number(size).toFixed(digit)}${unit[unitIndex]}`
+    },
+    getBG ({base64, clipBase64, compressBase64}) {
+      return compressBase64 || clipBase64 || base64
     }
   },
 
