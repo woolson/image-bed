@@ -77,18 +77,18 @@ export default {
   },
 
   mounted () {
-    this.$get('http://woolson.coding.me/image-bed-app/package.json')
+    this.$get(`http://woolson.coding.me/image-bed-app/package.json?${new Date().getTime()}`)
       .then(res => (this.newestVersion = res.version))
   },
 
   activated () {
-    this.$get('http://woolson.coding.me/image-bed-app/package.json')
+    this.$get(`http://woolson.coding.me/image-bed-app/package.json?${new Date().getTime()}`)
       .then(res => (this.newestVersion = res.version))
   },
 
   methods: {
     fetchVersion () {
-      this.$get('http://woolson.coding.me/image-bed-app/package.json')
+      this.$get(`http://woolson.coding.me/image-bed-app/package.json?${new Date().getTime()}`)
         .then(res => {
           this.newestVersion = res.version
           if (res.version === this.version) {
