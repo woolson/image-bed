@@ -1,19 +1,20 @@
 <template lang="pug">
 div._clipboard
-  croppa(
-    v-model="croppa"
+  vue-cropper(
+    ref="cropper"
     :quality="10"
-    :initial-image="image"
+    :img="image"
+    :autoCrop="true"
     :show-remove-button="false"
     initial-size="contain"
     initial-position="center"
   )
   div._clipboard__options
-    i.iconfont.icon-zoom-in(@click="croppa.zoomIn()")
-    i.iconfont.icon-zoom-out(@click="croppa.zoomOut()")
-    i.iconfont.icon-rotate.u-bold(@click="croppa.rotate(++rotate)")
-    i.iconfont.icon-initial.u-bold(@click="croppa.refresh()")
-  div
+    i.iconfont.icon-zoom-in(@click="$refs.cropper.changeScale(2)")
+    i.iconfont.icon-zoom-out(@click="$refs.cropper.changeScale(-2)")
+    i.iconfont.icon-rotate.u-bold(@click="$refs.cropper.rotateLeft()")
+    i.iconfont.icon-rotate.reserve.u-bold(@click="$refs.cropper.rotateRight()")
+  div.u-pb30
     el-button(
       plain
       size="mini"
@@ -27,7 +28,13 @@ div._clipboard
 </template>
 
 <script>
+import VueCropper from 'vue-cropper'
+
 export default {
+  components: {
+    'vue-cropper': VueCropper
+  },
+
   props: {
     resource: {
       type: String,
@@ -50,8 +57,9 @@ export default {
 
   methods: {
     onClip () {
-      const result = this.croppa.generateDataUrl('image/jpeg')
-      this.$emit('submit', result)
+      this.$refs.cropper.getCropData(data => {
+        this.$emit('submit', data)
+      })
     }
   }
 }
@@ -72,6 +80,8 @@ export default {
   canvas
     width 80vw !important
     height 80vw !important
+  .reserve
+    transform scaleX(-1)
 
 ._clipboard__options
   padding .3rem 0 .3rem 0
@@ -86,10 +96,8 @@ export default {
     cursor pointer
     font-size .5rem
     &:nth-child(3)
+    &:nth-child(4)
       font-size .45rem
-    &:last-child
-      font-size .5rem
-      font-weight lighter
     &:hover
       opacity .8
       text-shadow 0 0 .02rem rgba($background, .7)

@@ -1,13 +1,14 @@
 {
   "name": "image-bed",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "woolson <woolson.lee@gmail.com>",
   "description": "An app for easier cut/compress/upload images",
   "license": null,
   "main": "./dist/electron/main.js",
-  "download": "http://woolson.coding.me/image-bed-app",
+  "download": "https://woolson.coding.me/image-bed-app",
   "scripts": {
     "build": "node .electron-vue/build.js && electron-builder",
+    "build:win": "node .electron-vue/build.js && electron-builder --win --ia32",
     "build:dir": "node .electron-vue/build.js && electron-builder --dir",
     "build:clean": "cross-env BUILD_TARGET=clean node .electron-vue/build.js",
     "build:web": "cross-env BUILD_TARGET=web node .electron-vue/build.js",
