@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, Menu, clipboard } from 'electron'
 import initMessager from './lib/messager'
 // import os from 'os'
 // import path from 'path'
@@ -22,19 +22,25 @@ function createWindow () {
   /**
    * Initial window options
    */
+  setMenu()
   mainWindow = new BrowserWindow({
-    height: 700,
+    width: 500,
+    height: 500,
+    minWidth: 500,
+    minHeight: 400,
     useContentSize: true,
-    width: 600,
     frame: false,
+    titleBarStyle: 'hidden',
     // transparent: true,
-    resizable: false,
+    resizable: true,
     webPreferences: {
+      devTools: true,
       webSecurity: false
     }
   })
 
   mainWindow.loadURL(winURL)
+  // mainWindow.webContents.openDevTools()
 
   // 创建窗口后加载事件
   initMessager(app, ipcMain, mainWindow)
@@ -42,6 +48,56 @@ function createWindow () {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
+}
+
+function setMenu () {
+  let isZh = app.getLocale() === 'zh-CN'
+  let template = [
+    {
+      label: 'Application',
+      submenu: [
+        {
+          label: isZh ? '关于' : 'About',
+          selector: 'orderFrontStandardAboutPanel:'
+        },
+        { type: 'separator' },
+        {
+          label: isZh ? '退出' : 'Quit',
+          accelerator: 'Command+Q',
+          click: () => app.quit()
+        }
+      ]
+    },
+    {
+      label: isZh ? '视图' : 'View',
+      submenu: [
+        {
+          label: isZh ? '刷新' : 'Refresh',
+          accelerator: 'Command+R',
+          click: () => mainWindow.reload()
+        },
+        {
+          label: isZh ? '隐藏' : 'Hide',
+          accelerator: 'command+w',
+          click: () => app.hide()
+        }
+      ]
+    },
+    {
+      label: isZh ? '编辑' : 'Edit',
+      submenu: [
+        {
+          label: isZh ? '粘贴' : 'Paste',
+          accelerator: 'Command+V',
+          click: () => {
+            console.log(123)
+            mainWindow.webContents.send('onPaste', clipboard.readImage().toDataURL())
+          }
+        }
+      ]
+    }
+  ]
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template))
 }
 
 app.on('ready', createWindow)

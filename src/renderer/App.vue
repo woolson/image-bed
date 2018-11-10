@@ -1,17 +1,13 @@
 <template lang="pug">
   div(id="app")
-    div.header
-      div.header__ctrl
-        span.close(@click="quite") &times;
-        span.minus(@click="mini") &minus;
-      ul.header__nav
-        li(
-          v-for="item,index in tabs"
-          :class="{active: $route.path === item.path}"
-          @click="$router.push(item.path)"
-        )
-          span {{item.name}}
-    div.content
+    header
+      div(
+        v-for="item,index in tabs"
+        :class="{active: $route.path === item.path}"
+        @click="$router.push(item.path)"
+      )
+        span {{item.name}}
+    main.content
       transition(
         name="slide"
         appear

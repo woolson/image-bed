@@ -24,7 +24,7 @@ div.history
         div.u-display-flex.u-direction-column.u-flex-1
           div
             i.iconfont.icon-link.u-mr10.u-s24
-            span.u-underline(v-clipboard="item.imageUrl") {{item.imageUrl}}
+            span.u-underline(v-clipboard="item.imageUrl || '暂无数据'") {{item.imageUrl}}
           div.u-mt10
             i.iconfont.icon-image.u-mr10.u-s24
             span {{item.name || '—'}}
@@ -33,7 +33,7 @@ div.history
               i.iconfont.icon-calendar.u-mr10.u-s24
               span {{item.date}}
             span.u-mtauto.u-green.u-pointer(
-              v-clipboard="item.imageUrl"
+              v-clipboard="item.imageUrl || '暂无数据'"
               @success="copySuccessFn"
             ) 点击复制
 </template>

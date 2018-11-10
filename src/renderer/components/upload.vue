@@ -81,6 +81,7 @@ div.home
 <script>
 import Compress from './compress'
 import Clipboard from './clipboard'
+import { ipcRenderer } from 'electron'
 import { fileToBase64, uploadFile, deepCopy } from '../common/utils'
 import moment from 'moment'
 
@@ -108,7 +109,19 @@ export default {
   }),
 
   async mounted () {
-    if (process.env.NODE_ENV === 'development') return
+    ipcRenderer.on('onPaste', (evt, img) => {
+      // 非图片则不做处理
+      if (img.length < 30) return
+      const etc = img.match(/\/\w+;/g)[0].replace(/(;|\/)/g, '')
+      const strLen = img.length
+      this.fileList.push({
+        name: moment().format('YYYY-MM-DD_HH:mm:SS') + '.' + etc,
+        base64: img,
+        size: strLen - (strLen / 8) * 2
+      })
+    })
+
+    // if (process.env.NODE_ENV === 'development') return
 
     const hasLogin = await this.checkLogin()
     if (!hasLogin) {
