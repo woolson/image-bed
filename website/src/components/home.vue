@@ -6,7 +6,7 @@ div.home
       h1 图吧
       p 集图片裁剪、压缩、上传于一身，让你获取图片链接更方便
       div
-        a(href="http://public.woolson.cn/file/%E5%9B%BE%E5%90%A7-1.0.0.dmg") 下载macOS版(1.2.0)
+        a(href="http://public.woolson.cn/file/TuBa-1.2.0.dmg") 下载macOS版(1.2.0)
         //- a(href="http://public.woolson.cn/file/%E5%9B%BE%E5%90%A7-1.0.0.exe") Window
   section.home__thanks
     p
