@@ -42,7 +42,7 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../../docs'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/microsoft-todo-for-mac/',
+    assetsPublicPath: '/weibo-img/',
 
     /**
      * Source Maps
