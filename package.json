@@ -1,6 +1,6 @@
 {
   "name": "image-bed",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "author": "woolson <woolson.lee@gmail.com>",
   "description": "An app for easier cut/compress/upload images",
   "license": null,
@@ -22,7 +22,7 @@
     "asar": "asar list ./build/mac/image-bed.app/Contents/Resources/app.asar"
   },
   "build": {
-    "productName": "图吧",
+    "productName": "Image Bed",
     "appId": "org.simulatedgreg.electron-vue",
     "directories": {
       "output": "build"
@@ -81,8 +81,8 @@
     "css-loader": "^0.28.4",
     "del": "^3.0.0",
     "devtron": "^1.4.0",
-    "electron": "^3.0.8",
-    "electron-builder": "^19.19.1",
+    "electron": "^4.0.8",
+    "electron-builder": "^20.39.0",
     "electron-debug": "^1.4.0",
     "electron-devtools-installer": "^2.2.0",
     "eslint": "^4.4.1",

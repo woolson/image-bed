@@ -3,12 +3,13 @@ div.home
   header
     img(src="@/assets/logo.svg")
     div
-      h1 图吧
+      h1 图吧-Image Bed
       p 集图片裁剪、压缩、上传于一身，让你获取图片链接更方便
       div
-        a(href="http://public.woolson.cn/file/TuBa-1.2.0.dmg") 下载macOS版(1.2.0)
+        a(href="https://github.com/woolson/weibo-img/releases/download/v1.2.1/Image.Bed-1.2.1.dmg") 下载macOS版(1.2.1)
         //- a(href="http://public.woolson.cn/file/%E5%9B%BE%E5%90%A7-1.0.0.exe") Window
   section.home__thanks
+    p 需要登录微博才能使用
     p
       span 感谢新浪微博提供的功能和部分代码参考
       a(href="https://github.com/fate-lovely/pic-on-weibo" target="_blank") pic-on-weibo
@@ -93,10 +94,13 @@ export default {
         border-color transparent
         color white
   section.home__thanks
+    padding 20px 0
     p
       font-size 24px
       text-align center
-      margin 50px 0
+      &:first-child
+        font-weight bold
+        text-decoration underline
   section.home__intro
     margin-bottom 50px
     img
