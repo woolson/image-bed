@@ -1,8 +1,8 @@
 {
-  "name": "weibo-img",
+  "name": "image-bed",
   "version": "1.2.0",
   "download": "https://woolson.coding.me/image-bed-app",
-  "description": "weibo-img-page",
+  "description": "image bed based on weibo",
   "author": "woolson <woolson.lee@gmail.com>",
   "private": true,
   "scripts": {

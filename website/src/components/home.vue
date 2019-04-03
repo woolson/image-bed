@@ -6,8 +6,7 @@ div.home
       h1 图吧-Image Bed
       p 集图片裁剪、压缩、上传于一身，让你获取图片链接更方便
       div
-        a(href="https://github.com/woolson/weibo-img/releases/download/v1.2.1/Image.Bed-1.2.1.dmg") 下载macOS版(1.2.1)
-        //- a(href="http://public.woolson.cn/file/%E5%9B%BE%E5%90%A7-1.0.0.exe") Window
+        a(href="https://github.com/woolson/weibo-img/releases/") 查看下载
   section.home__thanks
     p 需要登录微博才能使用
     p

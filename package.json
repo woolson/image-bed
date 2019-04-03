@@ -1,9 +1,9 @@
 {
   "name": "image-bed",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "author": "woolson <woolson.lee@gmail.com>",
   "description": "An app for easier cut/compress/upload images",
-  "license": null,
+  "license": "MIT",
   "main": "./dist/electron/main.js",
   "download": "https://woolson.coding.me/image-bed-app",
   "scripts": {
@@ -23,7 +23,7 @@
   },
   "build": {
     "productName": "Image Bed",
-    "appId": "org.simulatedgreg.electron-vue",
+    "appId": "com.woolson.imageBed",
     "directories": {
       "output": "build"
     },
@@ -85,6 +85,7 @@
     "electron-builder": "^20.39.0",
     "electron-debug": "^1.4.0",
     "electron-devtools-installer": "^2.2.0",
+    "electron-log": "^3.0.5",
     "eslint": "^4.4.1",
     "eslint-config-standard": "^10.2.1",
     "eslint-friendly-formatter": "^3.0.0",
@@ -111,6 +112,7 @@
     "style-loader": "^0.18.2",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
+    "update-electron-app": "^1.3.0",
     "url-loader": "^0.5.9",
     "vue-clipboards": "^1.2.4",
     "vue-croppa": "^1.3.6",
