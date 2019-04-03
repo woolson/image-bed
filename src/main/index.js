@@ -35,7 +35,7 @@ function createWindow () {
   })
   // Check for updater
   require('update-electron-app')({
-    repo: 'woolson/weibo-img',
+    repo: 'woolson/image-bed',
     updateInterval: '5 minutes',
     logger: require('electron-log')
   })
