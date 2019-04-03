@@ -4,59 +4,17 @@ div.setting
     h3.setting__title.u-bb 基本设置
     div.setting__line
       label 清空历史
-      div
-        el-button(
-          size="mini"
-          type="danger"
-          plain
-          @click="clearHistory"
-        ) 清空历史
+      el-button(
+        size="mini"
+        type="danger"
+        plain
+        @click="clearHistory"
+      ) 清空历史
   section.u-mt50
-    h3.setting__title.u-bb 关于图吧
+    h3.setting__title.u-bb 关于
     div.setting__line
       label 当前版本
-      div
-        span.u-mr20.u-main v{{version}}
-        span.u-mr20.u-red.u-pointer.u-underline(
-          v-if="version !== newestVersion && newestVersion"
-          @click="openDownload"
-        ) 最新【点击下载】: v{{newestVersion}}
-        el-button(
-          size="mini"
-          :loading="checking"
-          @click="fetchVersion"
-        ) 检查更新
-    div.setting__line(v-if="false")
-      label 意见反馈
-      div.u-display-flex
-        el-button(
-          size="mini"
-          @click="showSuggestion = true"
-        ) 立即反馈
-  el-dialog.setting__dialog(:visible.sync="showSuggestion")
-    div.dialog-header(slot="title")
-      h2 意见与反馈
-      span 你的意见对我很重要 !!!
-    el-form(:model="form" label-width="70px")
-      el-form-item(label="联系方式")
-        el-input(
-          autofocus
-          v-model="form.name"
-          auto-complete="off"
-        )
-      el-form-item(label="建议内容")
-        el-input(
-          type="textarea"
-          :rows="4"
-        )
-    div.dialog-footer(slot="footer")
-      el-button(
-        @click="showSuggestion = false"
-      ) 取 消
-      el-button(
-        type="primary"
-        @click="showSuggestion = false"
-      ) 确 定
+      span.u-mr20.u-main v{{version}}
 </template>
 
 <script>
@@ -71,8 +29,7 @@ export default {
       newestVersion: '',
       form: {
         name: ''
-      },
-      showSuggestion: false
+      }
     }
   },
 
@@ -120,22 +77,6 @@ export default {
 
 
 <style lang="stylus">
-.setting__dialog
-  .el-dialog
-    width 70%
-
-  .dialog-header
-    display flex
-    align-items flex-end
-    flex-direction column
-    align-items flex-start
-    h2
-      margin 0
-      color $background
-    span
-      color $red
-      opacity .7
-
 .setting
   padding .2rem .3rem
 

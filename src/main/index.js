@@ -1,14 +1,9 @@
 'use strict'
 
-import { app, BrowserWindow, ipcMain, Menu, clipboard } from 'electron'
-import initMessager from './lib/messager'
-// import os from 'os'
-// import path from 'path'
-// import { execSync } from 'child_process'
-/**
- * Set `__static` path to static files in production
- * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
- */
+import { app, BrowserWindow } from 'electron'
+// import initMessager from './lib/messager'
+import setMenu from './lib/menu'
+
 if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
@@ -22,82 +17,42 @@ function createWindow () {
   /**
    * Initial window options
    */
-  setMenu()
   mainWindow = new BrowserWindow({
     width: 500,
-    height: 500,
+    height: 600,
     minWidth: 500,
     minHeight: 400,
     useContentSize: true,
     frame: false,
     titleBarStyle: 'hidden',
     // transparent: true,
+    show: false,
     resizable: true,
     webPreferences: {
       devTools: true,
       webSecurity: false
     }
   })
-
+  // Check for updater
+  require('update-electron-app')({
+    repo: 'woolson/weibo-img',
+    updateInterval: '5 minutes',
+    logger: require('electron-log')
+  })
   mainWindow.loadURL(winURL)
-  // mainWindow.webContents.openDevTools()
 
+  // 设置菜单栏
+  setMenu(mainWindow)
   // 创建窗口后加载事件
-  initMessager(app, ipcMain, mainWindow)
+  // initMessager(app, ipcMain, mainWindow)
 
   mainWindow.on('closed', () => {
     mainWindow = null
   })
-}
 
-function setMenu () {
-  let isZh = app.getLocale() === 'zh-CN'
-  let template = [
-    {
-      label: 'Application',
-      submenu: [
-        {
-          label: isZh ? '关于' : 'About',
-          selector: 'orderFrontStandardAboutPanel:'
-        },
-        { type: 'separator' },
-        {
-          label: isZh ? '退出' : 'Quit',
-          accelerator: 'Command+Q',
-          click: () => app.quit()
-        }
-      ]
-    },
-    {
-      label: isZh ? '视图' : 'View',
-      submenu: [
-        {
-          label: isZh ? '刷新' : 'Refresh',
-          accelerator: 'Command+R',
-          click: () => mainWindow.reload()
-        },
-        {
-          label: isZh ? '隐藏' : 'Hide',
-          accelerator: 'command+w',
-          click: () => app.hide()
-        }
-      ]
-    },
-    {
-      label: isZh ? '编辑' : 'Edit',
-      submenu: [
-        {
-          label: isZh ? '粘贴' : 'Paste',
-          accelerator: 'Command+V',
-          click: () => {
-            console.log(123)
-            mainWindow.webContents.send('onPaste', clipboard.readImage().toDataURL())
-          }
-        }
-      ]
-    }
-  ]
-  Menu.setApplicationMenu(Menu.buildFromTemplate(template))
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show()
+  })
 }
 
 app.on('ready', createWindow)
@@ -113,23 +68,3 @@ app.on('activate', () => {
     createWindow()
   }
 })
-
-/**
- * Auto Updater
- *
- * Uncomment the following code below and install `electron-updater` to
- * support auto updating. Code Signing with a valid certificate is required.
- * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-electron-builder.html#auto-updating
- */
-
-/*
-import { autoUpdater } from 'electron-updater'
-
-autoUpdater.on('update-downloaded', () => {
-  autoUpdater.quitAndInstall()
-})
-
-app.on('ready', () => {
-  if (process.env.NODE_ENV === 'production') autoUpdater.checkForUpdates()
-})
- */

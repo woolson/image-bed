@@ -1,5 +1,5 @@
 <template lang="pug">
-div.home
+div.home(@paste="onPaste")
   el-upload.home__upload(
     drag
     action="http://picupload.service.weibo.com/interface/pic_upload.php?mime=image%2Fjpeg&data=base64&url=0&markpos=1&logo=&nick=0&marks=1&app=miniblog"
@@ -8,6 +8,7 @@ div.home
     :auto-upload="false"
     :show-file-list="false"
     v-if="!result.length"
+    accept="image/*"
   )
     i.el-icon-upload
     div.el-upload__text 将文件拖到此处，或
@@ -81,7 +82,7 @@ div.home
 <script>
 import Compress from './compress'
 import Clipboard from './clipboard'
-import { ipcRenderer } from 'electron'
+import { clipboard } from 'electron'
 import { fileToBase64, uploadFile, deepCopy } from '../common/utils'
 import moment from 'moment'
 
@@ -109,19 +110,7 @@ export default {
   }),
 
   async mounted () {
-    ipcRenderer.on('onPaste', (evt, img) => {
-      // 非图片则不做处理
-      if (img.length < 30) return
-      const etc = img.match(/\/\w+;/g)[0].replace(/(;|\/)/g, '')
-      const strLen = img.length
-      this.fileList.push({
-        name: moment().format('YYYY-MM-DD_HH:mm:SS') + '.' + etc,
-        base64: img,
-        size: strLen - (strLen / 8) * 2
-      })
-    })
-
-    // if (process.env.NODE_ENV === 'development') return
+    if (process.env.NODE_ENV === 'development') return
 
     const hasLogin = await this.checkLogin()
     if (!hasLogin) {
@@ -139,6 +128,18 @@ export default {
   },
 
   methods: {
+    onPaste (evt) {
+      const img = clipboard.readImage().toDataURL()
+      // 非图片则不做处理
+      if (img.length < 30) return
+      const etc = img.match(/\/\w+;/g)[0].replace(/(;|\/)/g, '')
+      const strLen = img.length
+      this.fileList.push({
+        name: moment().format('YYYY-MM-DD_HH:mm:SS') + '.' + etc,
+        base64: img,
+        size: strLen - (strLen / 8) * 2
+      })
+    },
     async onChange (file) {
       file.base64 = await fileToBase64(file.raw)
       this.fileList.push(file)
