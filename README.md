@@ -1,6 +1,6 @@
 # 图床APP
 
-> 简单的压缩和裁剪图片，然后可以上传到微博图床
+> 简单的压缩和裁剪图片，然后可以上传到微博图床，微博上传接口代码参考[pic-on-weibo](https://github.com/fate-lovely/pic-on-weibo)代码。
 
 ## TODO
 
