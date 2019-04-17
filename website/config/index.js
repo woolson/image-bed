@@ -42,7 +42,7 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../../docs'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/weibo-img/',
+    assetsPublicPath: '/image-bed/',
 
     /**
      * Source Maps
